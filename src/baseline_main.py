@@ -9,9 +9,9 @@ import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 
-from utils import get_dataset
+from myutils import get_dataset
 from options import args_parser
-from update import test_inference
+from myupdate import test_inference
 from mymodels import TestmyNet, MLP, CNNMnist, CNNFashion_Mnist, CNNCifar
 
 
