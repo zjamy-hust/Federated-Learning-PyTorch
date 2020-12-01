@@ -31,7 +31,8 @@ class LocalUpdate(object):
             dataset, list(idxs))
         self.device = 'cuda' if args.gpu else 'cpu'
         # Default criterion set to NLL loss function
-        self.criterion = nn.NLLLoss().to(self.device)
+        self.criterion = nn.CrossEntropyLoss().to(self.device)
+        #self.criterion = nn.NLLLoss().to(self.device)
 
     def train_val_test(self, dataset, idxs):
         """

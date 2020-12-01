@@ -12,7 +12,7 @@ from torch.utils.data import DataLoader
 from utils import get_dataset
 from options import args_parser
 from update import test_inference
-from models import MLP, CNNMnist, CNNFashion_Mnist, CNNCifar
+from mymodels import TestmyNet, MLP, CNNMnist, CNNFashion_Mnist, CNNCifar
 
 
 if __name__ == '__main__':
@@ -41,6 +41,8 @@ if __name__ == '__main__':
             len_in *= x
             global_model = MLP(dim_in=len_in, dim_hidden=64,
                                dim_out=args.num_classes)
+    elif args.model == 'test':
+        global_model = TestmyNet(args=args)
     else:
         exit('Error: unrecognized model')
 
@@ -59,7 +61,7 @@ if __name__ == '__main__':
                                      weight_decay=1e-4)
 
     trainloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-    criterion = torch.nn.NLLLoss().to(device)
+    criterion = torch.nn.CrossEntropyLoss().to(device)
     epoch_loss = []
 
     for epoch in tqdm(range(args.epochs)):
@@ -89,7 +91,7 @@ if __name__ == '__main__':
     plt.plot(range(len(epoch_loss)), epoch_loss)
     plt.xlabel('epochs')
     plt.ylabel('Train loss')
-    plt.savefig('../save/nn_{}_{}_{}.png'.format(args.dataset, args.model,
+    plt.savefig('save/nn_{}_{}_{}.png'.format(args.dataset, args.model,
                                                  args.epochs))
 
     # testing

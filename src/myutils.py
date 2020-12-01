@@ -17,12 +17,17 @@ def get_dataset(args):
 
     if args.dataset == 'cifar':
         data_dir = '../data/cifar/'
+        train_transform = transforms.Compose(
+            [transforms.RandomHorizontalFlip(),
+             transforms.RandomGrayscale(),
+             transforms.ToTensor(),
+             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
         apply_transform = transforms.Compose(
             [transforms.ToTensor(),
              transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])
 
         train_dataset = datasets.CIFAR10(data_dir, train=True, download=True,
-                                       transform=apply_transform)
+                                       transform=train_transform)
 
         test_dataset = datasets.CIFAR10(data_dir, train=False, download=True,
                                       transform=apply_transform)
