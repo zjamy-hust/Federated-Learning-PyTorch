@@ -4,6 +4,7 @@
 
 
 from tqdm import tqdm
+import numpy as np
 import matplotlib.pyplot as plt
 
 import torch
@@ -11,7 +12,7 @@ from torch.utils.data import DataLoader
 
 from myutils import get_dataset
 from options import args_parser
-from myupdate import test_inference
+from myupdate import test_inference, DatasetSplit
 from mymodels import TestmyNet, MLP, CNNMnist, CNNFashion_Mnist, CNNCifar
 
 
@@ -22,7 +23,7 @@ if __name__ == '__main__':
     device = 'cuda' if args.gpu else 'cpu'
 
     # load datasets
-    train_dataset, test_dataset, _ = get_dataset(args)
+    train_dataset, test_dataset, user_groups = get_dataset(args)
 
     # BUILD MODEL
     if args.model == 'cnn':
@@ -60,7 +61,22 @@ if __name__ == '__main__':
         optimizer = torch.optim.Adam(global_model.parameters(), lr=args.lr,
                                      weight_decay=1e-4)
 
-    trainloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
+
+    m = max(int(args.frac * args.num_users), 1)
+    idxs_users = np.random.choice(range(args.num_users), m, replace=False)
+    idxs_train = []
+    idxs_train_local = []
+
+
+    for idx in idxs_users:
+        idxs=user_groups[idx]
+        idxs_train_local=list(idxs)[:int(0.9*len(list(idxs)))]
+        idxs_train=np.append(idxs_train,idxs_train_local)
+
+    trainloader = DataLoader(DatasetSplit(train_dataset, idxs_train),
+                                 batch_size=args.local_bs, shuffle=True)
+
+    #trainloader = DataLoader(train_dataset, batch_size=64, shuffle=True)
     criterion = torch.nn.CrossEntropyLoss().to(device)
     epoch_loss = []
 
