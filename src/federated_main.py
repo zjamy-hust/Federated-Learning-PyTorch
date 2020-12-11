@@ -70,7 +70,7 @@ if __name__ == '__main__':
     train_loss, train_accuracy = [], []
     val_acc_list, net_list = [], []
     cv_loss, cv_acc = [], []
-    print_every = 2
+    print_every = 1
     val_loss_pre, counter = 0, 0
 
     for epoch in tqdm(range(args.epochs)):
@@ -99,22 +99,22 @@ if __name__ == '__main__':
         loss_avg = sum(local_losses) / len(local_losses)
         train_loss.append(loss_avg)
 
-        ## Calculate avg training accuracy over all users at every epoch
-        #list_acc, list_loss = [], []
-        #global_model.eval()
-        #for c in range(args.num_users):
-        #    local_model = LocalUpdate(args=args, dataset=train_dataset,
-        #                              idxs=user_groups[idx], logger=logger)
-        #    acc, loss = local_model.inference(model=global_model)
-        #    list_acc.append(acc)
-        #    list_loss.append(loss)
-        #train_accuracy.append(sum(list_acc)/len(list_acc))
+        # Calculate avg training accuracy over all users at every epoch
+        list_acc, list_loss = [], []
+        global_model.eval()
+        for c in range(args.num_users):
+            local_model = LocalUpdate(args=args, dataset=train_dataset,
+                                      idxs=user_groups[idx], logger=logger)
+            acc, loss = local_model.inference(model=global_model)
+            list_acc.append(acc)
+            list_loss.append(loss)
+        train_accuracy.append(sum(list_acc)/len(list_acc))
 
-        ## print global training loss after every 'i' rounds
-        #if (epoch+1) % print_every == 0:
-        #    print(f' \nAvg Training Stats after {epoch+1} global rounds:')
-        #    print(f'Training Loss : {np.mean(np.array(train_loss))}')
-        #    print('Train Accuracy: {:.2f}% \n'.format(100*train_accuracy[-1]))
+        # print global training loss after every 'i' rounds
+        if (epoch+1) % print_every == 0:
+            print(f' \nAvg Training Stats after {epoch+1} global rounds:')
+            print(f'Training Loss : {np.mean(np.array(train_loss))}')
+            print('Train Accuracy: {:.2f}% \n'.format(100*train_accuracy[-1]))
 
     # Test inference after completion of training
     test_acc, test_loss = test_inference(args, global_model, test_dataset)

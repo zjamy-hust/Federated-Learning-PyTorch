@@ -40,6 +40,7 @@ class LocalUpdate(object):
         and user indexes.
         """
         # split indexes for train, validation, and test (80, 10, 10)
+        print(f'zjuan: len(idx), {len(idxs)}')
         idxs_train = idxs[:int(0.9*len(idxs))]
         idxs_val = idxs[int(0.9*len(idxs)):int(1.0*len(idxs))]
         idxs_test = idxs[int(0.9*len(idxs)):]
